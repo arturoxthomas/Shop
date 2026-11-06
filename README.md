@@ -12,7 +12,7 @@ The modernization work is taking place on `modernizacion/net10`; the historical 
 - UI: **ASP.NET Core MVC + Identity UI**
 - Architecture: MVC controllers, API endpoints and repository layer
 
-> This branch is under active development. It has not yet been certified by a successful build or end-to-end test. Do not deploy it to production.
+> The web project builds and all current automated tests pass in GitHub Actions. Database migration execution, browser-based end-to-end testing and production deployment validation are still pending. Do not deploy this branch to production.
 
 ## Features being recovered
 
@@ -84,7 +84,7 @@ These changes are an initial baseline, not a completed security audit. The histo
 
 ## Automated tests
 
-The initial test suite verifies that product queries return only records owned by the authenticated account and that both MVC and API product controllers require authentication. The tests use EF Core InMemory; database integration and browser-based end-to-end tests are still pending.
+The initial test suite has **4 passing tests**. It verifies that product queries return only records owned by the requested account and that both MVC and API product controllers require authentication. The tests use EF Core InMemory; database integration and browser-based end-to-end tests are still pending.
 
 ## Next steps
 

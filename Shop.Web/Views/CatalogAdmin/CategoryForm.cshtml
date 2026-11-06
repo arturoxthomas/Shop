@@ -1,0 +1,12 @@
+@model Shop.Web.Models.CatalogAdminForm
+@{ ViewData["Title"] = Model.Id == 0 ? "Nueva categoría" : "Editar categoría"; }
+<h1>@ViewData["Title"]</h1>
+<form asp-action="SaveCategory" method="post">
+    <input asp-for="Id" type="hidden" />
+    <div asp-validation-summary="All" class="text-danger"></div>
+    <div class="form-group"><label asp-for="Name">Nombre</label><input asp-for="Name" class="form-control" /><span asp-validation-for="Name" class="text-danger"></span></div>
+    <div class="form-group"><label asp-for="Slug">Identificador URL</label><input asp-for="Slug" class="form-control" /><span asp-validation-for="Slug" class="text-danger"></span></div>
+    <div class="form-group"><label asp-for="Description">Descripción</label><textarea asp-for="Description" class="form-control"></textarea></div>
+    <div class="checkbox"><label><input asp-for="IsActive" /> Activa</label></div>
+    <button type="submit" class="btn btn-primary">Guardar</button> <a asp-action="Categories" class="btn btn-default">Cancelar</a>
+</form>

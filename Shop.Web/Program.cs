@@ -77,4 +77,41 @@ app.MapControllerRoute(
     pattern: "{controller=Home}/{action=Index}/{id?}");
 app.MapRazorPages();
 
+// Explicit, development-only administrator setup. Never grant roles on normal startup.
+if (args.Length == 2 && args[0] == "--grant-shop-admin")
+{
+    if (!app.Environment.IsDevelopment())
+        throw new InvalidOperationException("Administrator setup is only available in Development.");
+
+    var email = args[1].Trim();
+    if (string.IsNullOrWhiteSpace(email))
+        throw new ArgumentException("Provide the existing user's email.");
+
+    using var scope = app.Services.CreateScope();
+    var users = scope.ServiceProvider.GetRequiredService<UserManager<User>>();
+    var roles = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
+    var user = await users.FindByEmailAsync(email);
+    if (user == null || !user.EmailConfirmed)
+        throw new InvalidOperationException("User not found or email not confirmed. No permissions changed.");
+
+    if (!await roles.RoleExistsAsync("Admin"))
+    {
+        var created = await roles.CreateAsync(new IdentityRole("Admin"));
+        if (!created.Succeeded)
+            throw new InvalidOperationException("Could not create Admin role: " +
+                string.Join("; ", created.Errors.Select(e => e.Description)));
+    }
+
+    if (!await users.IsInRoleAsync(user, "Admin"))
+    {
+        var assigned = await users.AddToRoleAsync(user, "Admin");
+        if (!assigned.Succeeded)
+            throw new InvalidOperationException("Could not grant Admin role: " +
+                string.Join("; ", assigned.Errors.Select(e => e.Description)));
+    }
+
+    Console.WriteLine("Admin role assigned to existing confirmed user. Sign out and sign in again.");
+    return;
+}
+
 app.Run();

@@ -1,40 +1,90 @@
 # Shop
 
-A small e-commerce application originally built with ASP.NET Core 2.1, Entity Framework Core, SQL Server and ASP.NET Identity. The repository also contains legacy Xamarin.Forms clients.
+Shop is a learning and portfolio e-commerce application. It started as an ASP.NET Core 2.1 MVC project with Entity Framework Core, SQL Server and ASP.NET Identity. The repository also preserves legacy Xamarin.Forms clients.
 
 ## Modernization status
 
-This repository is being modernized on the `modernizacion/net10` branch. The original `master` branch is being preserved as the historical baseline.
+The modernization work is taking place on `modernizacion/net10`; the historical `master` branch remains unchanged.
 
-The modernization target is **.NET 10 (LTS)**. The application is not production-ready while this work is in progress.
+- Web target: **.NET 10**
+- Persistence: **Entity Framework Core 10 + SQL Server**
+- Authentication: **ASP.NET Core Identity**
+- UI: **ASP.NET Core MVC + Identity UI**
+- Architecture: MVC controllers, API endpoints and repository layer
 
-## Existing capabilities identified
+> This branch is under active development. It has not yet been certified by a successful build or end-to-end test. Do not deploy it to production.
+
+## Features being recovered
 
 - Product catalog with create, read, update and delete screens
-- Product stock and availability fields
-- ASP.NET Identity user model
-- SQL Server persistence through Entity Framework Core
-- Generic repository and product/country repositories
-- Initial read-only products API
-- Legacy Xamarin.Forms Android/iOS projects
+- Product stock, availability and pricing fields
+- Individual user accounts
+- User-scoped product management
+- Read-only products API
+- SQL Server persistence and EF Core migrations
+- Historical Xamarin.Forms Android/iOS clients (not part of the current .NET 10 web build)
 
-## Planned work
+## Requirements
 
-1. Remove hardcoded personal data and credentials from application code and replace demo account creation with safe configuration or explicit local development setup.
-2. Replace hardcoded user identities with the authenticated user's identity and enforce authorization and per-user data access.
-3. Upgrade the web application to .NET 10 and supported ASP.NET Core / EF Core packages.
-4. Replace legacy startup and middleware configuration with the modern hosting model.
-5. Review entity validation, database migrations, API contracts, error handling and logging.
-6. Add automated tests and a reproducible local development setup.
-7. Refresh the UI and document how to run and demonstrate the application.
-8. Review the historical public Git history for exposed personal data and credentials; removing a value from the current files does not erase it from earlier commits.
+- .NET 10 SDK
+- SQL Server LocalDB on Windows for the default development connection, or another SQL Server instance
+- Git
 
-## Development
+## Run locally
 
-The current legacy web project targets .NET Core 2.1 and should be treated as a historical reference until the migration is completed. Do not deploy it as-is.
+1. Clone the repository and switch to `modernizacion/net10`.
+2. Restore dependencies:
 
-Connection strings and credentials must be supplied through local user secrets or environment variables. Never commit production secrets, personal contact information, database files, publish profiles or local configuration.
+   ```bash
+   dotnet restore Shop.Web/Shop.Web.csproj
+   ```
+
+3. On Windows, the development configuration uses SQL Server LocalDB. For another SQL Server instance, set the environment variable `ConnectionStrings__DefaultConnection` before starting the application.
+
+   PowerShell example:
+
+   ```powershell
+   $env:ConnectionStrings__DefaultConnection = "Server=localhost;Database=Shop;Trusted_Connection=True;TrustServerCertificate=True"
+   ```
+
+4. Apply the database migrations after confirming that the migration history matches the target database:
+
+   ```bash
+   dotnet tool restore
+   dotnet ef database update --project Shop.Web/Shop.Web.csproj
+   ```
+
+5. Start the web application:
+
+   ```bash
+   dotnet run --project Shop.Web/Shop.Web.csproj
+   ```
+
+6. Open the local HTTPS URL printed by the application. Register an account through `/Identity/Account/Register`, then manage products through `/Products`.
+
+The committed LocalDB connection is for local development only. Production connection strings must be injected through environment variables or a managed secret store; never commit production credentials.
+
+## Security work completed so far
+
+- Removed the hardcoded demo account initializer.
+- Removed hardcoded email identities from product controllers.
+- Required authentication for product MVC and API endpoints.
+- Added owner-scoped product reads, updates and deletes.
+- Strengthened password and lockout defaults.
+- Configured secure, HTTP-only authentication cookies.
+- Added the ASP.NET Core Identity login and registration UI.
+
+These changes are an initial baseline, not a completed security audit. The historical public Git history may still contain personal information and a demo credential; deleting the current file does not erase earlier commits. A separate history review and cleanup is still required.
+
+## Next steps
+
+1. Validate the EF Core 2.1 migrations against EF Core 10 and generate a clean migration baseline if required.
+2. Run the .NET 10 build and fix all compile/runtime issues.
+3. Add automated tests for authentication, authorization and ownership boundaries.
+4. Improve the UI, accessibility and responsive layout.
+5. Add product image handling, search, filtering and pagination.
+6. Publish a hosted demo only after the security and deployment reviews.
 
 ## Security
 
-Please read [SECURITY.md](SECURITY.md) before using or reporting a security issue.
+Read [SECURITY.md](SECURITY.md) before reporting a vulnerability.

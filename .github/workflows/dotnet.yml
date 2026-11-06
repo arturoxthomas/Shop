@@ -1,4 +1,4 @@
-name: .NET 10 build
+name: .NET 10 build and test
 
 on:
   push:
@@ -21,7 +21,10 @@ jobs:
           dotnet-version: 10.0.x
 
       - name: Restore
-        run: dotnet restore Shop.Web/Shop.Web.csproj
+        run: dotnet restore Shop.Web.Tests/Shop.Web.Tests.csproj
 
-      - name: Build
+      - name: Run automated tests
+        run: dotnet test Shop.Web.Tests/Shop.Web.Tests.csproj --configuration Release --no-restore
+
+      - name: Build web application
         run: dotnet build Shop.Web/Shop.Web.csproj --configuration Release --no-restore

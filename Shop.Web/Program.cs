@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Shop.Web.Data;
 using Shop.Web.Data.Entities;
+using Shop.Web.Data.Catalog;
 using Shop.Web.Helpers;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -14,6 +15,10 @@ if (string.IsNullOrWhiteSpace(connectionString))
 }
 
 builder.Services.AddDbContext<DataContext>(options =>
+    options.UseSqlServer(connectionString));
+
+// Database-First catalog context; Identity and legacy products stay on DataContext.
+builder.Services.AddDbContext<ShopCatalogContext>(options =>
     options.UseSqlServer(connectionString));
 
 builder.Services

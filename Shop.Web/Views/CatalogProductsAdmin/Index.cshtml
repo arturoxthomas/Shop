@@ -1,0 +1,14 @@
+@model IEnumerable<Shop.Web.Data.Catalog.Entities.ShopCatalogProduct>
+@{ ViewData["Title"] = "Administrar productos"; }
+<h1>Productos de Shop 2.0</h1>
+<p><a asp-action="Create" class="btn btn-primary">Nuevo producto</a></p>
+<div class="table-responsive">
+<table class="table table-striped">
+<thead><tr><th>SKU</th><th>Producto</th><th>Categoría</th><th>Marca</th><th>Precio</th><th>Stock</th><th>Publicado</th><th></th></tr></thead>
+<tbody>
+@foreach (var p in Model)
+{
+<tr><td>@p.Sku</td><td>@p.Name</td><td>@p.Category.Name</td><td>@p.Brand?.Name</td><td>@p.Price.ToString("N2")</td><td>@p.Stock.ToString("N2")</td><td>@(p.IsPublished ? "Sí" : "No")</td><td><a asp-action="Edit" asp-route-id="@p.Id">Editar</a></td></tr>
+}
+</tbody></table>
+</div>

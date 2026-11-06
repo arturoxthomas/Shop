@@ -28,3 +28,16 @@ jobs:
 
       - name: Build web application
         run: dotnet build Shop.Web/Shop.Web.csproj --configuration Release --no-restore
+
+      - name: Generate SQL Server create script from historical migrations
+        run: |
+          dotnet tool restore
+          mkdir -p artifacts
+          dotnet ef migrations script 0 --project Shop.Web/Shop.Web.csproj --startup-project Shop.Web/Shop.Web.csproj --output artifacts/Shop-Create.sql
+
+      - name: Upload database creation script
+        uses: actions/upload-artifact@v4
+        with:
+          name: shop-database-create-script
+          path: artifacts/Shop-Create.sql
+          if-no-files-found: error

@@ -70,7 +70,7 @@ Run the automated tests with:
 
 The committed LocalDB connection is for local development only. Production connection strings must be injected through environment variables or a managed secret store; never commit production credentials.
 
-## Security work completed so far
+## Database migration safety\n\nThe repository includes a read-only SQL Server preflight script at [Database/Preflight-Shop.sql](Database/Preflight-Shop.sql), a design-time EF Core context factory, and a step-by-step migration plan at [docs/database-migration-efcore10.md](docs/database-migration-efcore10.md). The historical EF Core 2.1 migrations have not been replaced or applied to a database. Review the preflight output and migration plan before running any database update.\n\n## Security work completed so far
 
 - Removed the hardcoded demo account initializer.
 - Removed hardcoded email identities from product controllers.
@@ -88,7 +88,7 @@ The initial test suite has **4 passing tests**. It verifies that product queries
 
 ## Next steps
 
-1. Validate the EF Core 2.1 migrations against EF Core 10 and generate a clean migration baseline if required.
+1. Inspect a real SQL Server database using the read-only preflight script, then validate the EF Core 2.1 migration history against EF Core 10.
 2. Run the .NET 10 build and fix all compile/runtime issues.
 3. Add automated tests for authentication, authorization and ownership boundaries.
 4. Improve the UI, accessibility and responsive layout.

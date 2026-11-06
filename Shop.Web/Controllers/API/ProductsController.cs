@@ -1,25 +1,25 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using Shop.Web.Data;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-
 namespace Shop.Web.Controllers.API
 {
-    [Route("api/[Controller]")]
-    public class ProductsController:Controller
+    using Microsoft.AspNetCore.Authorization;
+    using Microsoft.AspNetCore.Mvc;
+    using Shop.Web.Data;
+
+    [Authorize]
+    [ApiController]
+    [Route("api/[controller]")]
+    public class ProductsController : ControllerBase
     {
         private readonly IProductRepository productRepository;
 
-        public ProductsController(IProductRepository productRepository) {
+        public ProductsController(IProductRepository productRepository)
+        {
             this.productRepository = productRepository;
         }
 
         [HttpGet]
         public IActionResult GetProducts()
         {
-            return Ok(this.productRepository.GetAll());
+            return Ok(this.productRepository.GetAllByUserEmail(User.Identity.Name));
         }
     }
 }

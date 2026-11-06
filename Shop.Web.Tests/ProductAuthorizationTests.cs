@@ -1,6 +1,5 @@
 using Microsoft.AspNetCore.Authorization;
 using Shop.Web.Controllers;
-using Shop.Web.Controllers.API;
 using Xunit;
 
 namespace Shop.Web.Tests;

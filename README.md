@@ -62,6 +62,12 @@ The modernization work is taking place on `modernizacion/net10`; the historical 
 
 6. Open the local HTTPS URL printed by the application. Register an account through `/Identity/Account/Register`, then manage products through `/Products`.
 
+Run the automated tests with:
+
+   ```bash
+   dotnet test Shop.Web.Tests/Shop.Web.Tests.csproj --configuration Release
+   ```
+
 The committed LocalDB connection is for local development only. Production connection strings must be injected through environment variables or a managed secret store; never commit production credentials.
 
 ## Security work completed so far
@@ -75,6 +81,10 @@ The committed LocalDB connection is for local development only. Production conne
 - Added the ASP.NET Core Identity login and registration UI.
 
 These changes are an initial baseline, not a completed security audit. The historical public Git history may still contain personal information and a demo credential; deleting the current file does not erase earlier commits. A separate history review and cleanup is still required.
+
+## Automated tests
+
+The initial test suite verifies that product queries return only records owned by the authenticated account and that both MVC and API product controllers require authentication. The tests use EF Core InMemory; database integration and browser-based end-to-end tests are still pending.
 
 ## Next steps
 

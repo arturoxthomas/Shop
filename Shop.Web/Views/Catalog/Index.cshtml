@@ -1,0 +1,68 @@
+@model Shop.Web.Controllers.CatalogIndexViewModel
+@{
+    ViewData["Title"] = "Catálogo";
+}
+<div class="page-header">
+    <h1>Catálogo Shop 2.0</h1>
+    <p>Explora nuestros productos disponibles.</p>
+</div>
+<form asp-controller="Catalog" asp-action="Index" method="get" class="form-inline" style="margin-bottom:20px">
+    <div class="form-group">
+        <label for="search">Buscar</label>
+        <input id="search" name="search" value="@Model.Search" maxlength="100" class="form-control" placeholder="Nombre o SKU" />
+    </div>
+    <div class="form-group">
+        <label for="categoryId">Categoría</label>
+        <select id="categoryId" name="categoryId" class="form-control">
+            <option value="">Todas</option>
+            @foreach (var category in Model.Categories)
+            {
+                if (Model.CategoryId == category.Id)
+                {
+                    <option value="@category.Id" selected>@category.Name</option>
+                }
+                else
+                {
+                    <option value="@category.Id">@category.Name</option>
+                }
+            }
+        </select>
+    </div>
+    <button type="submit" class="btn btn-primary">Buscar</button>
+</form>
+@if (Model.Products.Count == 0)
+{
+    <div class="alert alert-info">No hay productos publicados que coincidan con tu búsqueda.</div>
+}
+<div class="row">
+@foreach (var product in Model.Products)
+{
+    <div class="col-sm-6 col-md-4">
+        <div class="thumbnail" style="min-height:240px">
+            @if (!string.IsNullOrEmpty(product.ImageUrl))
+            {
+                <img src="@product.ImageUrl" alt="@product.Name" style="height:120px;object-fit:contain" />
+            }
+            <div class="caption">
+                <h3>@product.Name</h3>
+                <p>@product.Category</p>
+                <p><strong>@product.Price.ToString("C")</strong></p>
+                <p>@(product.Stock > 0 ? "Disponible" : "Agotado")</p>
+            </div>
+        </div>
+    </div>
+}
+</div>
+@if (Model.TotalPages > 1)
+{
+    <nav aria-label="Páginas del catálogo">
+        <ul class="pagination">
+            @for (var i = 1; i <= Model.TotalPages; i++)
+            {
+                <li class="@(i == Model.Page ? "active" : "")">
+                    <a asp-action="Index" asp-route-search="@Model.Search" asp-route-categoryId="@Model.CategoryId" asp-route-page="@i">@i</a>
+                </li>
+            }
+        </ul>
+    </nav>
+}

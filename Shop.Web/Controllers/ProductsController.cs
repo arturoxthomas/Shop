@@ -1,12 +1,14 @@
-﻿namespace Shop.Web.Controllers
+namespace Shop.Web.Controllers
 {
     using System.Threading.Tasks;
+    using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Mvc;
     using Microsoft.EntityFrameworkCore;
     using Shop.Web.Data;
     using Shop.Web.Data.Entities;
     using Shop.Web.Helpers;
 
+    [Authorize]
     public class ProductsController : Controller
     {
         private readonly IProductRepository productRepository;
@@ -18,121 +20,98 @@
             this.userHelper = userHelper;
         }
 
-        // GET: Products
         public IActionResult Index()
         {
-            return View(this.productRepository.GetAll());
+            return View(this.productRepository.GetAllByUserEmail(User.Identity.Name));
         }
 
-        // GET: Products/Details/5
         public async Task<IActionResult> Details(int? id)
         {
-            if (id == null)
-            {
-                return NotFound();
-            }
+            if (id == null) return NotFound();
 
-            var product = await this.productRepository.GetByIdAsync(id.Value);
-            if (product == null)
-            {
-                return NotFound();
-            }
+            var product = await this.productRepository.GetByIdAndUserEmailAsync(id.Value, User.Identity.Name);
+            if (product == null) return NotFound();
 
             return View(product);
         }
 
-        // GET: Products/Create
         public IActionResult Create()
         {
             return View();
         }
 
-        // POST: Products/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(Product product)
         {
-            if (ModelState.IsValid)
-            {
-                // TODO: Pending to change to: this.User.Identity.Name
-                product.User = await this.userHelper.GetUserByEmailAsync("arturoxthomas@gmail.com");
-                await this.productRepository.CreateAsync(product);
-                return RedirectToAction(nameof(Index));
-            }
+            if (!ModelState.IsValid) return View(product);
 
-            return View(product);
+            var currentUser = await this.userHelper.GetUserByEmailAsync(User.Identity.Name);
+            if (currentUser == null) return Challenge();
+
+            product.User = currentUser;
+            await this.productRepository.CreateAsync(product);
+            return RedirectToAction(nameof(Index));
         }
 
-        // GET: Products/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {
-            if (id == null)
-            {
-                return NotFound();
-            }
+            if (id == null) return NotFound();
 
-            var product = await this.productRepository.GetByIdAsync(id.Value);
-            if (product == null)
-            {
-                return NotFound();
-            }
+            var product = await this.productRepository.GetByIdAndUserEmailAsync(id.Value, User.Identity.Name);
+            if (product == null) return NotFound();
 
             return View(product);
         }
 
-        // POST: Products/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(Product product)
+        public async Task<IActionResult> Edit(int id, Product input)
         {
-            if (ModelState.IsValid)
+            if (id != input.Id) return NotFound();
+            if (!ModelState.IsValid) return View(input);
+
+            var product = await this.productRepository.GetByIdAndUserEmailAsync(id, User.Identity.Name);
+            if (product == null) return NotFound();
+
+            product.Name = input.Name;
+            product.Price = input.Price;
+            product.ImageUrl = input.ImageUrl;
+            product.LastPurchase = input.LastPurchase;
+            product.LastSale = input.LastSale;
+            product.IsAvailabe = input.IsAvailabe;
+            product.Stock = input.Stock;
+
+            try
             {
-                try
-                {
-                    // TODO: Pending to change to: this.User.Identity.Name
-                    product.User = await this.userHelper.GetUserByEmailAsync("jzuluaga55@gmail.com");
-                    await this.productRepository.UpdateAsync(product);
-                }
-                catch (DbUpdateConcurrencyException)
-                {
-                    if (!await this.productRepository.ExistAsync(product.Id))
-                    {
-                        return NotFound();
-                    }
-                    else
-                    {
-                        throw;
-                    }
-                }
-                return RedirectToAction(nameof(Index));
+                await this.productRepository.UpdateAsync(product);
+            }
+            catch (DbUpdateConcurrencyException)
+            {
+                if (!await this.productRepository.ExistAsync(id)) return NotFound();
+                throw;
             }
 
-            return View(product);
+            return RedirectToAction(nameof(Index));
         }
 
-        // GET: Products/Delete/5
         public async Task<IActionResult> Delete(int? id)
         {
-            if (id == null)
-            {
-                return NotFound();
-            }
+            if (id == null) return NotFound();
 
-            var product = await this.productRepository.GetByIdAsync(id.Value);
-            if (product == null)
-            {
-                return NotFound();
-            }
+            var product = await this.productRepository.GetByIdAndUserEmailAsync(id.Value, User.Identity.Name);
+            if (product == null) return NotFound();
 
             return View(product);
         }
 
-        // POST: Products/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var product = await this.productRepository.GetByIdAsync(id);
+            var product = await this.productRepository.GetByIdAndUserEmailAsync(id, User.Identity.Name);
+            if (product == null) return NotFound();
+
             await this.productRepository.DeleteAsync(product);
             return RedirectToAction(nameof(Index));
         }

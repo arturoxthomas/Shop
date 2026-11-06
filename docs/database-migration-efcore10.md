@@ -14,7 +14,7 @@ This establishes a practical Database-First workflow for business entities witho
 
 ## Step 1 - create a clean database
 
-The GitHub Actions workflow generates Shop-Create.sql from the four existing migrations and publishes it as a workflow artifact. Download it from a successful run and execute it in SQL Server Management Studio against a **new, empty database named Shop**. The script creates the schema only; it does not recover old products, accounts, or other historical data.
+The GitHub Actions workflow successfully generated the SQL script from all four historical migrations. The generated file is committed at [Database/Shop-Create.sql](../Database/Shop-Create.sql) and is also published as the `shop-database-create-script` workflow artifact. Execute it in SQL Server Management Studio against a **new, empty database named Shop**. The script creates the schema only; it does not recover old products, accounts, or other historical data. It is not idempotent and must not be run twice or against a database that already contains these tables.
 
 Do not execute this script against a database that contains data.
 
@@ -52,7 +52,7 @@ The current DataContext derives from IdentityDbContext<User>. The historical mig
 - It does not switch the running application to the generated context automatically.
 
 ## Verification checklist
-- [ ] Generate Shop-Create.sql from the latest branch workflow.
+- [x] Generate Shop-Create.sql from the four historical migrations and commit the generated baseline script.
 - [ ] Create a brand-new empty SQL Server database from that script.
 - [ ] Verify all expected tables, constraints, indexes, and migration history.
 - [ ] Run Scaffold-ShopDatabase.ps1.

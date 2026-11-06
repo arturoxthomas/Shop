@@ -1,0 +1,12 @@
+@model IEnumerable<Shop.Web.Data.Catalog.Entities.ShopCategory>
+@{ ViewData["Title"] = "Administrar categorías"; }
+<h1>Categorías</h1>
+<p><a asp-action="NewCategory" class="btn btn-primary">Nueva categoría</a> <a asp-action="Brands" class="btn btn-default">Marcas</a></p>
+<table class="table table-striped">
+<thead><tr><th>Nombre</th><th>Identificador</th><th>Estado</th><th></th></tr></thead>
+<tbody>
+@foreach (var item in Model)
+{
+<tr><td>@item.Name</td><td>@item.Slug</td><td>@(item.IsActive ? "Activa" : "Inactiva")</td><td><a asp-action="EditCategory" asp-route-id="@item.Id">Editar</a></td></tr>
+}
+</tbody></table>

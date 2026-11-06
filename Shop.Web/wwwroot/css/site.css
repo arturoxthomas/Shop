@@ -35,3 +35,24 @@ body {
         display: none;
     }
 }
+
+/* Shop 2.0: navigation follows document flow; never obscures page headings. */
+body { padding-top: 0; background: #f6f8fb; color: #253449; }
+.shop-navbar { position: relative; margin-bottom: 28px; border: 0; border-radius: 0; background: #14263c; }
+.shop-navbar .navbar-brand { font-weight: 700; letter-spacing: .3px; color: #fff; }
+.shop-navbar .navbar-nav > li > a { color: #e1e8f2; }
+.shop-navbar .navbar-nav > li > a:hover,
+.shop-navbar .navbar-nav > li.open > a { color: #fff; background: #203d5c; }
+.shop-navbar .dropdown-menu { border: 0; border-radius: 8px; box-shadow: 0 12px 28px rgba(20,38,60,.15); }
+.body-content { min-height: calc(100vh - 155px); }
+.body-content h1 { font-size: 30px; font-weight: 650; margin: 0 0 22px; color: #172b46; }
+.body-content form { background: #fff; border: 1px solid #e1e7ef; border-radius: 10px; padding: 24px; box-shadow: 0 5px 20px rgba(23,43,70,.04); }
+.body-content form .form-control { border-radius: 6px; height: 40px; }
+.body-content form textarea.form-control { height: auto; }
+.body-content .btn-primary { background: #1765bb; border-color: #1765bb; border-radius: 6px; }
+.body-content .table { background: #fff; }
+@media (max-width: 767px) {
+  .shop-navbar { margin-bottom: 20px; }
+  .body-content h1 { font-size: 25px; }
+  .body-content form { padding: 16px; }
+}

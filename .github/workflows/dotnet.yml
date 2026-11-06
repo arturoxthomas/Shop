@@ -3,7 +3,6 @@ name: .NET 10 build
 on:
   push:
     branches:
-      - master
       - modernizacion/net10
   pull_request:
     branches:

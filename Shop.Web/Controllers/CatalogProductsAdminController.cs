@@ -60,10 +60,10 @@ public sealed class CatalogProductsAdminController : Controller
             ModelState.AddModelError(nameof(form.BrandId), "Selecciona una marca activa.");
         if (await db.ShopCatalogProducts.AnyAsync(p => p.Id != form.Id && (p.Sku == form.Sku || p.Slug == form.Slug)))
             ModelState.AddModelError("", "El SKU o identificador URL ya está registrado.");
-        if (form.ImageUrl != null && !Uri.TryCreate(form.ImageUrl, UriKind.Absolute, out var imageUri))
-            ModelState.AddModelError(nameof(form.ImageUrl), "La URL de imagen no es válida.");
-        else if (form.ImageUrl != null && imageUri!.Scheme != Uri.UriSchemeHttps)
-            ModelState.AddModelError(nameof(form.ImageUrl), "La imagen debe usar HTTPS.");
+        if (form.ImageUrl != null &&
+            (!Uri.TryCreate(form.ImageUrl, UriKind.Absolute, out var imageUri) ||
+             imageUri.Scheme != Uri.UriSchemeHttps))
+            ModelState.AddModelError(nameof(form.ImageUrl), "La imagen debe ser una URL HTTPS válida.");
         if (!ModelState.IsValid) { await PopulateOptions(); return View("Form", form); }
 
         ShopCatalogProduct p;

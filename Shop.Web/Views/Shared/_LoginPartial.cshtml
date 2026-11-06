@@ -1,0 +1,26 @@
+@using Microsoft.AspNetCore.Identity
+@using Shop.Web.Data.Entities
+@inject SignInManager<User> SignInManager
+@inject UserManager<User> UserManager
+
+<ul class="nav navbar-nav navbar-right">
+@if (SignInManager.IsSignedIn(User))
+{
+    <li>
+        <a asp-area="Identity" asp-page="/Account/Manage/Index" title="Manage account">
+            @UserManager.GetUserName(User)
+        </a>
+    </li>
+    <li>
+        <form class="navbar-form" asp-area="Identity" asp-page="/Account/Logout"
+              asp-route-returnUrl="@Url.Action("Index", "Home", new { area = "" })" method="post">
+            <button type="submit" class="btn btn-link navbar-link">Sign out</button>
+        </form>
+    </li>
+}
+else
+{
+    <li><a asp-area="Identity" asp-page="/Account/Register">Register</a></li>
+    <li><a asp-area="Identity" asp-page="/Account/Login">Log in</a></li>
+}
+</ul>

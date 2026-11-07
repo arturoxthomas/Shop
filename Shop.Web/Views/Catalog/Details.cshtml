@@ -1,0 +1,43 @@
+@model Shop.Web.Controllers.CatalogProductDetails
+@{
+    ViewData["Title"] = Model.Name;
+}
+<p><a asp-controller="Catalog" asp-action="Index">← Volver al catálogo</a></p>
+<div class="row">
+    <div class="col-md-6">
+        @if (Model.Images.Count > 0)
+        {
+            <img src="@Model.Images[0].Url" alt="@(Model.Images[0].Alt ?? Model.Name)" class="img-responsive img-thumbnail" style="width:100%;max-height:420px;object-fit:contain" />
+            @if (Model.Images.Count > 1)
+            {
+                <div class="row" style="margin-top:12px">
+                    @foreach (var image in Model.Images.Skip(1))
+                    {
+                        <div class="col-xs-4"><img src="@image.Url" alt="@(image.Alt ?? Model.Name)" class="img-responsive img-thumbnail" /></div>
+                    }
+                </div>
+            }
+        }
+        else
+        {
+            <div class="well text-center" style="padding:90px 15px">Imagen no disponible</div>
+        }
+    </div>
+    <div class="col-md-6">
+        <h1>@Model.Name</h1>
+        <p class="text-muted">SKU: @Model.Sku</p>
+        <p><strong>Categoría:</strong> @Model.Category</p>
+        @if (!string.IsNullOrWhiteSpace(Model.Brand))
+        {
+            <p><strong>Marca:</strong> @Model.Brand</p>
+        }
+        <h2>B/. @Model.Price.ToString("N2")</h2>
+        <p><strong>@(Model.Stock > 0 ? "Disponible" : "Agotado")</strong></p>
+        @if (!string.IsNullOrWhiteSpace(Model.Description))
+        {
+            <h3>Descripción</h3>
+            <p style="white-space:pre-line">@Model.Description</p>
+        }
+        <p class="text-muted">Próximamente: añadir al carrito.</p>
+    </div>
+</div>

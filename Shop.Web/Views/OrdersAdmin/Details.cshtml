@@ -1,0 +1,33 @@
+@model Shop.Web.Data.Orders.ShopOrder
+@{ ViewData["Title"] = "Pedido #" + Model.Id; }
+<h1>Pedido #@Model.Id</h1>
+<p><strong>Cliente:</strong> @Model.CustomerName</p>
+<p><strong>Correo:</strong> @Model.CustomerEmail</p>
+<p><strong>Teléfono:</strong> @Model.Phone</p>
+<p><strong>Dirección:</strong> @Model.ShippingAddress</p>
+<p><strong>Observaciones:</strong> @Model.Notes</p>
+<p><strong>Estado:</strong> @Model.Status</p>
+<table class="table table-striped">
+<thead><tr><th>SKU</th><th>Producto</th><th>Cantidad</th><th>Precio</th></tr></thead>
+<tbody>
+@foreach (var item in Model.Items)
+{
+<tr><td>@item.Sku</td><td>@item.ProductName</td><td>@item.Quantity</td><td>B/. @item.UnitPrice.ToString("N2")</td></tr>
+}
+</tbody>
+</table>
+<h3>Total: B/. @Model.Total.ToString("N2")</h3>
+@if (Model.Status != "Cancelled")
+{
+<form asp-action="Status" asp-route-id="@Model.Id" method="post">
+<label for="status">Actualizar estado</label>
+<select name="status" id="status" class="form-control">
+<option value="Pending">Pendiente</option>
+<option value="Confirmed">Confirmado</option>
+<option value="Shipped">Enviado</option>
+<option value="Delivered">Entregado</option>
+</select>
+<button type="submit" class="btn btn-primary" style="margin-top:10px">Guardar estado</button>
+</form>
+}
+<a asp-action="Index">Volver a pedidos</a>

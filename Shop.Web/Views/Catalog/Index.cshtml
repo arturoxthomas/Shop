@@ -44,10 +44,10 @@
                 <img src="@product.ImageUrl" alt="@product.Name" style="height:120px;object-fit:contain" />
             }
             <div class="caption">
-                <h3>@product.Name</h3>
+                <h3><a asp-controller="Catalog" asp-action="Details" asp-route-id="@product.Id">@product.Name</a></h3>
                 <p>@product.Category</p>
                 <p><strong>@product.Price.ToString("C")</strong></p>
-                <p>@(product.Stock > 0 ? "Disponible" : "Agotado")</p>
+                <p>@(product.Stock > 0 ? "Disponible" : "Agotado")</p>\n                <p><a asp-controller="Catalog" asp-action="Details" asp-route-id="@product.Id" class="btn btn-primary">Ver detalles</a></p>
             </div>
         </div>
     </div>

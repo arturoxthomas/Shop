@@ -5,6 +5,7 @@ using Shop.Web.Data.Entities;
 using Shop.Web.Data.Catalog;
 using Shop.Web.Helpers;
 using Shop.Web.Services;
+using Shop.Web.Data.Orders;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -20,6 +21,8 @@ builder.Services.AddDbContext<DataContext>(options =>
 
 // Database-First catalog context; Identity and legacy products stay on DataContext.
 builder.Services.AddDbContext<ShopCatalogContext>(options =>
+    options.UseSqlServer(connectionString));
+builder.Services.AddDbContext<ShopOrdersContext>(options =>
     options.UseSqlServer(connectionString));
 
 builder.Services

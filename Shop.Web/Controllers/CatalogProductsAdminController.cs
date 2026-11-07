@@ -13,11 +13,9 @@ namespace Shop.Web.Controllers;
 public sealed class CatalogProductsAdminController : Controller
 {
     private readonly ShopCatalogContext db;
-    private readonly IWebHostEnvironment environment;
-    public CatalogProductsAdminController(ShopCatalogContext db, IWebHostEnvironment environment)
+    public CatalogProductsAdminController(ShopCatalogContext db)
     {
         this.db = db;
-        this.environment = environment;
     }
 
     [HttpGet("")]
@@ -44,7 +42,7 @@ public sealed class CatalogProductsAdminController : Controller
             Id = p.Id, Sku = p.Sku, Name = p.Name, Slug = p.Slug,
             Description = p.Description, CategoryId = p.CategoryId, BrandId = p.BrandId,
             Price = p.Price, Stock = p.Stock, IsPublished = p.IsPublished,
-            ExistingImages = p.ShopProductImages.OrderBy(i => i.SortOrder).Select(i => new CatalogImageItem(i.Id, i.ImageUrl)).ToList()
+            ExistingImages = p.ShopProductImages.OrderBy(i => i.SortOrder).Select(i => new CatalogImageItem(i.Id, i.ImageData != null ? "/catalog/images/" + i.Id : i.ImageUrl)).ToList()
         });
     }
 
@@ -87,44 +85,33 @@ public sealed class CatalogProductsAdminController : Controller
         foreach (var image in existingImages.Where(i => removed.Contains(i.Id)))
             db.ShopProductImages.Remove(image);
 
-        var writtenFiles = new List<string>();
         try
         {
-            var folder = Path.Combine(environment.WebRootPath, "uploads", "products");
-            Directory.CreateDirectory(folder);
             var order = existingImages.Where(i => !removed.Contains(i.Id))
                 .Select(i => i.SortOrder).DefaultIfEmpty(-1).Max() + 1;
             foreach (var file in form.Images)
             {
-                var ext = await ImageExtension(file);
-                var filename = Guid.NewGuid().ToString("N") + ext;
-                var diskPath = Path.Combine(folder, filename);
-                await using (var stream = new FileStream(diskPath, FileMode.CreateNew))
-                    await file.CopyToAsync(stream);
-                writtenFiles.Add(diskPath);
+                await using var stream = new MemoryStream();
+                await file.CopyToAsync(stream);
+                var extension = await ImageExtension(file);
+                var contentType = extension switch {
+                    ".jpg" => "image/jpeg", ".png" => "image/png", ".webp" => "image/webp",
+                    _ => throw new InvalidDataException("Unsupported image")
+                };
                 p.ShopProductImages.Add(new ShopProductImage {
-                    ImageUrl = "/uploads/products/" + filename, AltText = p.Name, SortOrder = order++
+                    ImageUrl = "/catalog/images/pending",
+                    ImageData = stream.ToArray(), ContentType = contentType,
+                    FileName = Guid.NewGuid().ToString("N") + extension,
+                    AltText = p.Name, SortOrder = order++
                 });
             }
             await db.SaveChangesAsync();
         }
-        catch (Exception ex) when (ex is IOException or UnauthorizedAccessException or DbUpdateException)
+        catch (DbUpdateException)
         {
-            foreach (var file in writtenFiles)
-                if (System.IO.File.Exists(file)) System.IO.File.Delete(file);
             ModelState.AddModelError("", "No fue posible guardar el producto o sus imágenes.");
             await PopulateOptions();
             return View("Form", form);
-        }
-        foreach (var image in existingImages.Where(i => removed.Contains(i.Id)))
-        {
-            const string prefix = "/uploads/products/";
-            if (!image.ImageUrl.StartsWith(prefix, StringComparison.Ordinal)) continue;
-            var filename = image.ImageUrl[prefix.Length..];
-            if (Path.GetFileName(filename) != filename) continue;
-            var diskPath = Path.Combine(environment.WebRootPath, "uploads", "products", filename);
-            try { if (System.IO.File.Exists(diskPath)) System.IO.File.Delete(diskPath); }
-            catch (IOException) { /* Cleanup can be retried later. */ }
         }
         return RedirectToAction(nameof(Index));
     }

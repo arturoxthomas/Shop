@@ -1,0 +1,32 @@
+@model Shop.Web.Models.CheckoutForm
+@{ ViewData["Title"] = "Finalizar compra"; }
+<h1>Finalizar compra</h1>
+<p class="alert alert-info">Pedido de demostración: no se procesarán pagos reales.</p>
+<form asp-controller="Checkout" asp-action="PlaceOrder" method="post">
+    <div asp-validation-summary="All" class="text-danger"></div>
+    <div class="form-group">
+        <label asp-for="CustomerName">Nombre completo</label>
+        <input asp-for="CustomerName" class="form-control" autocomplete="name" />
+        <span asp-validation-for="CustomerName" class="text-danger"></span>
+    </div>
+    <div class="form-group">
+        <label asp-for="CustomerEmail">Correo electrónico</label>
+        <input asp-for="CustomerEmail" class="form-control" type="email" autocomplete="email" />
+        <span asp-validation-for="CustomerEmail" class="text-danger"></span>
+    </div>
+    <div class="form-group">
+        <label asp-for="Phone">Teléfono (opcional)</label>
+        <input asp-for="Phone" class="form-control" autocomplete="tel" />
+    </div>
+    <div class="form-group">
+        <label asp-for="ShippingAddress">Dirección de entrega</label>
+        <textarea asp-for="ShippingAddress" class="form-control" rows="3"></textarea>
+        <span asp-validation-for="ShippingAddress" class="text-danger"></span>
+    </div>
+    <div class="form-group">
+        <label asp-for="Notes">Observaciones (opcional)</label>
+        <textarea asp-for="Notes" class="form-control" rows="2"></textarea>
+    </div>
+    <button type="submit" class="btn btn-success">Confirmar pedido de prueba</button>
+    <a asp-controller="Cart" asp-action="Index" class="btn btn-default">Volver al carrito</a>
+</form>

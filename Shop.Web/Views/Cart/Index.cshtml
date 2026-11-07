@@ -1,0 +1,55 @@
+@model Shop.Web.Controllers.CartDisplayModel
+@{ ViewData["Title"] = "Carrito de compras"; }
+<h1>Carrito de compras</h1>
+@if (TempData["CartError"] is string error)
+{
+    <div class="alert alert-warning" role="alert">@error</div>
+}
+@if (Model.Lines.Count == 0)
+{
+    <div class="alert alert-info">Tu carrito está vacío.</div>
+    <a asp-controller="Catalog" asp-action="Index" class="btn btn-primary">Explorar productos</a>
+}
+else
+{
+    <div class="table-responsive">
+        <table class="table table-striped">
+            <thead><tr><th>Producto</th><th>Precio</th><th>Cantidad</th><th>Subtotal</th><th></th></tr></thead>
+            <tbody>
+            @foreach (var line in Model.Lines)
+            {
+                <tr>
+                    <td>
+                        <a asp-controller="Catalog" asp-action="Details" asp-route-id="@line.ProductId">@line.Name</a>
+                        @if (!line.HasEnoughStock) { <p class="text-danger">Existencias insuficientes</p> }
+                    </td>
+                    <td>B/. @line.Price.ToString("N2")</td>
+                    <td>
+                        <form asp-controller="Cart" asp-action="Update" method="post" class="form-inline">
+                            <input type="hidden" name="productId" value="@line.ProductId" />
+                            <input type="number" name="quantity" value="@line.Quantity" min="0" max="99" class="form-control" style="width:85px" aria-label="Cantidad de @line.Name" />
+                            <button class="btn btn-default" type="submit">Actualizar</button>
+                        </form>
+                    </td>
+                    <td>B/. @line.Subtotal.ToString("N2")</td>
+                    <td>
+                        <form asp-controller="Cart" asp-action="Update" method="post">
+                            <input type="hidden" name="productId" value="@line.ProductId" />
+                            <input type="hidden" name="quantity" value="0" />
+                            <button type="submit" class="btn btn-link text-danger">Eliminar</button>
+                        </form>
+                    </td>
+                </tr>
+            }
+            </tbody>
+        </table>
+    </div>
+    <div class="text-right">
+        <h3>Total: B/. @Model.Total.ToString("N2")</h3>
+        <p class="text-muted">Los precios y existencias se consultan nuevamente en SQL Server. El pago estará disponible próximamente.</p>
+        <a asp-controller="Catalog" asp-action="Index" class="btn btn-primary">Seguir comprando</a>
+        <form asp-controller="Cart" asp-action="Clear" method="post" style="display:inline">
+            <button type="submit" class="btn btn-default">Vaciar carrito</button>
+        </form>
+    </div>
+}

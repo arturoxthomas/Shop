@@ -30,7 +30,7 @@ public sealed class CatalogController : Controller
         var products = await query.OrderBy(p => p.Name).ThenBy(p => p.Id)
             .Skip((page - 1) * 12).Take(12)
             .Select(p => new CatalogProductCard(p.Id, p.Name, p.Price, p.Stock, p.Category.Name,
-                p.ShopProductImages.OrderBy(i => i.SortOrder).Select(i => i.ImageUrl).FirstOrDefault()))
+                p.ShopProductImages.OrderBy(i => i.SortOrder).Select(i => i.ImageData != null ? "/catalog/images/" + i.Id : i.ImageUrl).FirstOrDefault()))
             .ToListAsync();
         var categories = await db.ShopCategories.AsNoTracking().Where(c => c.IsActive)
             .OrderBy(c => c.Name).Select(c => new CatalogCategoryOption(c.Id, c.Name)).ToListAsync();
@@ -45,7 +45,7 @@ public sealed class CatalogController : Controller
                 p.Id, p.Sku, p.Name, p.Description, p.Price, p.Stock,
                 p.Category.Name, p.Brand != null ? p.Brand.Name : null,
                 p.ShopProductImages.OrderBy(i => i.SortOrder)
-                    .Select(i => new CatalogProductImage(i.ImageUrl, i.AltText)).ToList()))
+                    .Select(i => new CatalogProductImage(i.ImageData != null ? "/catalog/images/" + i.Id : i.ImageUrl, i.AltText)).ToList()))
             .FirstOrDefaultAsync();
         return product == null ? NotFound() : View(product);
     }

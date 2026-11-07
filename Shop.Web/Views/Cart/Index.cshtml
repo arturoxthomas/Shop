@@ -47,6 +47,7 @@ else
     <div class="text-right">
         <h3>Total: B/. @Model.Total.ToString("N2")</h3>
         <p class="text-muted">Los precios y existencias se consultan nuevamente en SQL Server. El pago estará disponible próximamente.</p>
+        <a asp-controller="Checkout" asp-action="Index" class="btn btn-success">Finalizar compra</a>
         <a asp-controller="Catalog" asp-action="Index" class="btn btn-primary">Seguir comprando</a>
         <form asp-controller="Cart" asp-action="Clear" method="post" style="display:inline">
             <button type="submit" class="btn btn-default">Vaciar carrito</button>

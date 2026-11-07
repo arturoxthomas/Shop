@@ -38,6 +38,22 @@
             <h3>Descripción</h3>
             <p style="white-space:pre-line">@Model.Description</p>
         }
-        <p class="text-muted">Próximamente: añadir al carrito.</p>
+        @if (TempData["CartError"] is string cartError)
+        {
+            <div class="alert alert-warning">@cartError</div>
+        }
+        @if (Model.Stock >= 1)
+        {
+            <form asp-controller="Cart" asp-action="Add" method="post" class="form-inline">
+                <input type="hidden" name="productId" value="@Model.Id" />
+                <label for="quantity">Cantidad</label>
+                <input id="quantity" name="quantity" type="number" value="1" min="1" max="99" class="form-control" style="width:85px" />
+                <button type="submit" class="btn btn-success">Añadir al carrito</button>
+            </form>
+        }
+        else
+        {
+            <p class="text-danger">Producto agotado</p>
+        }
     </div>
 </div>

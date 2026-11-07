@@ -1,0 +1,8 @@
+@model int
+@{ ViewData["Title"] = "Pedido registrado"; }
+<h1>Pedido registrado</h1>
+<div class="alert alert-success">
+    Se registró el pedido de demostración <strong>#@Model</strong>.
+</div>
+<p>El pedido quedó pendiente de confirmación. No se ha realizado ningún cobro.</p>
+<a asp-controller="Catalog" asp-action="Index" class="btn btn-primary">Volver al catálogo</a>

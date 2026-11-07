@@ -1,4 +1,5 @@
 using System.ComponentModel.DataAnnotations;
+using Microsoft.AspNetCore.Http;
 
 namespace Shop.Web.Models;
 
@@ -14,5 +15,9 @@ public sealed class CatalogProductForm
     [Range(typeof(decimal), "0", "9999999999999999", ErrorMessage = "El precio debe ser positivo o cero.")] public decimal Price { get; set; }
     [Range(typeof(decimal), "0", "9999999999999999", ErrorMessage = "El inventario debe ser positivo o cero.")] public decimal Stock { get; set; }
     public bool IsPublished { get; set; }
-    [StringLength(2048), Url] public string? ImageUrl { get; set; }
+    public List<IFormFile> Images { get; set; } = new();
+    public List<CatalogImageItem> ExistingImages { get; set; } = new();
+    public List<int> RemoveImageIds { get; set; } = new();
 }
+
+public sealed record CatalogImageItem(int Id, string Url);

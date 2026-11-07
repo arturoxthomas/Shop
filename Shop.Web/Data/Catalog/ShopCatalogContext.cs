@@ -93,6 +93,8 @@ public partial class ShopCatalogContext : DbContext
             entity.HasIndex(e => e.ProductId, "IX_ShopProductImages_ProductId");
 
             entity.Property(e => e.AltText).HasMaxLength(200);
+            entity.Property(e => e.ContentType).HasMaxLength(50);
+            entity.Property(e => e.FileName).HasMaxLength(255);
             entity.Property(e => e.ImageUrl)
                 .IsRequired()
                 .HasMaxLength(2048);

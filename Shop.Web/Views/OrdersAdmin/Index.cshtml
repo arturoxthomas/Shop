@@ -1,0 +1,17 @@
+@model IReadOnlyList<Shop.Web.Data.Orders.ShopOrder>
+@{ ViewData["Title"] = "Administrar pedidos"; }
+<h1>Pedidos</h1>
+<table class="table table-striped">
+<thead><tr><th>Número</th><th>Fecha UTC</th><th>Cliente</th><th>Estado</th><th>Total</th><th></th></tr></thead>
+<tbody>
+@foreach (var order in Model)
+{
+<tr>
+<td>#@order.Id</td><td>@order.CreatedAtUtc.ToString("yyyy-MM-dd HH:mm")</td>
+<td>@order.CustomerName</td><td>@order.Status</td>
+<td>B/. @order.Total.ToString("N2")</td>
+<td><a asp-action="Details" asp-route-id="@order.Id">Ver pedido</a></td>
+</tr>
+}
+</tbody>
+</table>
